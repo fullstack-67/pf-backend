@@ -1,25 +1,36 @@
-import * as dotenv from 'dotenv'
-import express from 'express'
-import cors from 'cors' 
-import helmet from 'helmet'
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import { dbClient } from "@db/client";
 
+//Intializing the express app
+const app = express();
 
-//App Varaibles 
-dotenv.config()
+//Middleware
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-//intializing the express app 
-const app = express(); 
+//
+app.get("/todo", async (req, res, next) => {
+  try {
+    const results = await dbClient.query.todoTable.findMany();
+    console.log(results);
+    res.json(results);
+  } catch (err) {
+    next(err);
+  }
+});
 
-//using the dependencies
-app.use(helmet()); 
-app.use(cors()); 
-app.use(express.json())
+// JSON Error Middleware
+const jsonErrorHandler = (err, req, res, next) => {
+  res.status(500).send({ error: err });
+};
+app.use(jsonErrorHandler);
 
-//exporting app
-const PORT = process.env.PORT || 3000
-
-//Listing to the app and running it on PORT 5000
+// Running app
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
-   console.log(`Listening on port ${PORT}`)
-})
-
+  console.log(`Listening on port ${PORT}`);
+});

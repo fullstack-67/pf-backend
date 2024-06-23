@@ -44,6 +44,13 @@ app.patch("/todo", async (req, res, next) => {
     const id = req.body.id ?? "";
     const todoText = req.body.todoText ?? "";
     if (!todoText || !id) throw new Error("Empty todoText or id");
+
+    // Check for existence if data
+    const results = await dbClient.query.todoTable.findMany({
+      where: eq(todoTable.id, id),
+    });
+    if (results.length === 0) throw new Error("Invalid id");
+
     const result = await dbClient
       .update(todoTable)
       .set({ todoText })
@@ -61,12 +68,12 @@ app.delete("/todo", async (req, res, next) => {
     const id = req.body.id ?? "";
     if (!id) throw new Error("Empty id");
 
+    // Check for existence if data
     const results = await dbClient.query.todoTable.findMany({
       where: eq(todoTable.id, id),
     });
     if (results.length === 0) throw new Error("Invalid id");
 
-    console.log({ results });
     await dbClient.delete(todoTable).where(eq(todoTable.id, id));
     res.json({
       msg: `Delete successfully`,

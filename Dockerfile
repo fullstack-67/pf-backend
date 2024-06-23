@@ -10,7 +10,6 @@ RUN \
     else echo "Lockfile not found." && exit 1; \
     fi
 RUN npm run build
-RUN npm run db:generate
 ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nodejs

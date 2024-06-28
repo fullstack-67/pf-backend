@@ -11,7 +11,7 @@ const app = express();
 
 //Middleware
 app.use(helmet());
-app.use(cors());
+// app.use(cors()); // Enable if you don't have proxy server.
 app.use(express.json());
 
 // Query

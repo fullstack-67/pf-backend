@@ -14,7 +14,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: false, // Disable CORS
-    // origin: "*",  // Allow all origins
+    // origin: "*", // Allow all origins
   }),
 );
 app.use(express.json());
@@ -34,10 +34,13 @@ app.put("/todo", async (req, res, next) => {
   try {
     const todoText = req.body.todoText ?? "";
     if (!todoText) throw new Error("Empty todoText");
-    await dbClient.insert(todoTable).values({
-      todoText,
-    });
-    res.json({ msg: `Insert successfully`, data: { todoText } });
+    const result = await dbClient
+      .insert(todoTable)
+      .values({
+        todoText,
+      })
+      .returning({ id: todoTable.id, todoText: todoTable.todoText });
+    res.json({ msg: `Insert successfully`, data: result[0] });
   } catch (err) {
     next(err);
   }
@@ -83,6 +86,18 @@ app.delete("/todo", async (req, res, next) => {
     res.json({
       msg: `Delete successfully`,
       data: { id },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post("/todo/all", async (req, res, next) => {
+  try {
+    await dbClient.delete(todoTable);
+    res.json({
+      msg: `Delete all rows successfully`,
+      data: {},
     });
   } catch (err) {
     next(err);

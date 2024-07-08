@@ -5,8 +5,13 @@
 
 # Sync database
 
-- `npm run db:generate`
-- `npm run db:push` or `npm run db:migrate`
+- Pushing
+
+  - `npm run db:push`
+
+- Migrating
+  - `npm run db:generate`
+  - `npm run db:migrate`
 
 # Dev operations
 
